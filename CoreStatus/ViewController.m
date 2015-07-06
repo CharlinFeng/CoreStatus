@@ -7,8 +7,10 @@
 //
 
 #import "ViewController.h"
+#import "CoreStatus.h"
 
-@interface ViewController ()
+
+@interface ViewController ()<CoreStatusProtocol>
 
 @end
 
@@ -16,12 +18,23 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view, typically from a nib.
+    
+    [CoreStatus beginNotiNetwork:self];
+    
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+
+
+
+-(void)coreNetworkChangeNoti:(NSNotification *)noti{
+    
+    NSString * statusString = [CoreStatus currentNetWorkStatusString];
+    
+    NSLog(@"%@",statusString);
+    
 }
+
+
+
 
 @end

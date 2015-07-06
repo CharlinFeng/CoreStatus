@@ -1,46 +1,244 @@
 //
-//  ToolStatus.m
-//  网络
+//  CoreNetWorkStatusObserver.m
+//  CoreNetWorkStatusObserver
 //
-//  Created by muxi on 14-10-11.
-//  Copyright (c) 2014年 沐汐. All rights reserved.
+//  Created by LiHaozhen on 15/5/2.
+//  Copyright (c) 2015年 ihojin. All rights reserved.
 //
 
 #import "CoreStatus.h"
+#import <CoreTelephony/CTTelephonyNetworkInfo.h>
+
+
+
+
+@interface CoreStatus ()
+
+/** 2G数组 */
+@property (nonatomic,strong) NSArray *technology2GArray;
+
+/** 3G数组 */
+@property (nonatomic,strong) NSArray *technology3GArray;
+
+/** 4G数组 */
+@property (nonatomic,strong) NSArray *technology4GArray;
+
+/** 网络状态中文数组 */
+@property (nonatomic,strong) NSArray *coreNetworkStatusStringArray;
+
+@property (nonatomic,strong) Reachability *reachability;
+
+@property (nonatomic,strong) CTTelephonyNetworkInfo *telephonyNetworkInfo;
+
+@property (nonatomic,copy) NSString *currentRaioAccess;
+
+/** 是否正在监听 */
+@property (nonatomic,assign) BOOL isNoti;
+
+@end
+
+
+
 
 @implementation CoreStatus
+HMSingletonM(CoreStatus)
 
 
 
 
-/**
- *  获取当前网络状态
- */
-+(NetworkStatus)status{
-    return [[Reachability reachabilityForInternetConnection] currentReachabilityStatus];
+
+
+/** 获取当前网络状态：枚举 */
++(CoreNetWorkStatus)currentNetWorkStatus{
+    
+    CoreStatus *status = [CoreStatus sharedCoreStatus];
+
+    return [status statusWithRadioAccessTechnology];
+}
+
+
+/** 获取当前网络状态：字符串 */
++(NSString *)currentNetWorkStatusString{
+    
+    CoreStatus *status = [CoreStatus sharedCoreStatus];
+    
+    return status.coreNetworkStatusStringArray[[self currentNetWorkStatus]];
+}
+
+-(Reachability *)reachability{
+    
+    if(_reachability == nil){
+        
+        _reachability = [Reachability reachabilityForInternetConnection];
+    }
+    
+    return _reachability;
+}
+
+
+-(CTTelephonyNetworkInfo *)telephonyNetworkInfo{
+    
+    if(_telephonyNetworkInfo == nil){
+        
+        _telephonyNetworkInfo = [[CTTelephonyNetworkInfo alloc] init];
+        
+    }
+    
+    return _telephonyNetworkInfo;
+}
+
+
+-(NSString *)currentRaioAccess{
+    
+    if(_currentRaioAccess == nil){
+        
+        _currentRaioAccess = self.telephonyNetworkInfo.currentRadioAccessTechnology;
+    }
+    
+    return _currentRaioAccess;
+}
+
+
+/** 开始网络监听 */
++(void)beginNotiNetwork:(id<CoreStatusProtocol>)listener{
+    
+    CoreStatus *status = [CoreStatus sharedCoreStatus];
+    
+    if(status.isNoti){
+    
+        NSLog(@"CoreStatus已经处于监听中，请检查其他页面是否关闭监听！");
+        
+        [self endNotiNetwork:(id<CoreStatusProtocol>)listener];
+    }
+    
+    //注册监听
+    [[NSNotificationCenter defaultCenter] addObserver:listener selector:@selector(coreNetworkChangeNoti:) name:kReachabilityChangedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:listener selector:@selector(coreNetworkChangeNoti:) name:CTRadioAccessTechnologyDidChangeNotification object:nil];
+
+    [status.reachability startNotifier];
+    
+    //标记
+    status.isNoti = YES;
 }
 
 
 
-/**
- *  是否处于WIFI环境中：
- */
-+(BOOL)isWIFIEnable{
-    return [self status]==ReachableViaWiFi;
+
+
+
+
+/** 停止网络监听 */
++(void)endNotiNetwork:(id<CoreStatusProtocol>)listener{
+    
+    CoreStatus *status = [CoreStatus sharedCoreStatus];
+    
+    if(!status.isNoti){
+        
+        NSLog(@"CoreStatus监听已经被关闭"); return;
+    }
+    
+    //解除监听
+    [[NSNotificationCenter defaultCenter] removeObserver:listener name:kReachabilityChangedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:listener name:CTRadioAccessTechnologyDidChangeNotification object:nil];
+    
+    //标记
+    status.isNoti = NO;
+}
+
+- (void)CoreNetWorkStatusChanged:(NSNotification *)notification
+{
+    //发送通知
+    
+    if (notification.name == CTRadioAccessTechnologyDidChangeNotification &&
+        notification.object != nil) {
+        
+        _currentRaioAccess = _telephonyNetworkInfo.currentRadioAccessTechnology;
+    }
 }
 
 
 
-/**
- *  是否有网络数据连接：含2G/3G/WIFI
+
+
+- (CoreNetWorkStatus)statusWithRadioAccessTechnology{
+    
+    CoreNetWorkStatus status = (CoreNetWorkStatus)[self.reachability currentReachabilityStatus];
+    
+    NSString *technology = self.currentRaioAccess;
+    
+    if (status == CoreNetWorkStatusWWAN &&
+        technology != nil) {
+        
+        if ([self.technology2GArray containsObject:technology]){
+        
+            status = CoreNetWorkStatus2G;
+            
+        }else if ([self.technology3GArray containsObject:technology])
+            
+            status = CoreNetWorkStatus3G;
+        
+        else if ([self.technology4GArray containsObject:technology]){
+            status = CoreNetWorkStatus4G;
+        }
+        
+    }
+    
+    return status;
+}
+
+/*
+ *  懒加载
  */
-+(BOOL)isNETWORKEnable{
-    return [self status] != NotReachable;
+/** 2G数组 */
+-(NSArray *)technology2GArray{
+    
+    if(_technology2GArray == nil){
+        
+        _technology2GArray = @[CTRadioAccessTechnologyEdge,CTRadioAccessTechnologyGPRS];
+    }
+    
+    return _technology2GArray;
 }
 
 
+/** 3G数组 */
+-(NSArray *)technology3GArray{
+    
+    if(_technology3GArray == nil){
+        
+        _technology3GArray = @[CTRadioAccessTechnologyHSDPA,
+                               CTRadioAccessTechnologyWCDMA,
+                               CTRadioAccessTechnologyHSUPA,
+                               CTRadioAccessTechnologyCDMA1x,
+                               CTRadioAccessTechnologyCDMAEVDORev0,
+                               CTRadioAccessTechnologyCDMAEVDORevA,
+                               CTRadioAccessTechnologyCDMAEVDORevB,
+                               CTRadioAccessTechnologyeHRPD];
+    }
+    
+    return _technology3GArray;
+}
 
+/** 4G数组 */
+-(NSArray *)technology4GArray{
+    
+    if(_technology4GArray == nil){
+        
+        _technology4GArray = @[CTRadioAccessTechnologyLTE];
+    }
+    
+    return _technology4GArray;
+}
 
-
+/** 网络状态中文数组 */
+-(NSArray *)coreNetworkStatusStringArray{
+    
+    if(_coreNetworkStatusStringArray == nil){
+        
+        _coreNetworkStatusStringArray = @[@"无网络",@"Wifi",@"蜂窝网络",@"2G",@"3G",@"4G",@"未知网络"];
+    }
+    
+    return _coreNetworkStatusStringArray;
+}
 
 @end

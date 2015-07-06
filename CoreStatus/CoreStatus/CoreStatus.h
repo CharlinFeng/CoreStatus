@@ -1,34 +1,35 @@
 //
-//  ToolStatus.h
-//  网络
+//  CoreNetWorkStatusObserver.h
+//  CoreNetWorkStatusObserver
 //
-//  Created by muxi on 14-10-11.
-//  Copyright (c) 2014年 沐汐. All rights reserved.
+//  Created by LiHaozhen on 15/5/2.
+//  Copyright (c) 2015年 ihojin. All rights reserved.
 //
-//
-
 
 #import <Foundation/Foundation.h>
 #import "Reachability.h"
+#import "CoreNetWorkStatus.h"
+#import "CoreStatusSingleton.h"
+#import "CoreStatusProtocol.h"
+
+
 
 @interface CoreStatus : NSObject
-
-/**
- *  获取当前网络状态
- */
-+(NetworkStatus)status;
+HMSingletonH(CoreStatus)
 
 
+/** 获取当前网络状态：枚举 */
++(CoreNetWorkStatus)currentNetWorkStatus;
 
-/**
- *  是否处于WIFI环境中：
- */
-+(BOOL)isWIFIEnable;
+/** 获取当前网络状态：字符串 */
++(NSString *)currentNetWorkStatusString;
 
-/**
- *  是否有网络数据连接：含2G/3G/WIFI
- */
-+(BOOL)isNETWORKEnable;
+
+/** 开始网络监听 */
++(void)beginNotiNetwork:(id<CoreStatusProtocol>)listener;
+
+/** 停止网络监听 */
++(void)endNotiNetwork:(id<CoreStatusProtocol>)listener;
 
 
 

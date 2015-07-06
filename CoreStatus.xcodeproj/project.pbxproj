@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		89A156AE1B4AB33B0086BBBA /* CoreStatus.m in Sources */ = {isa = PBXBuildFile; fileRef = 89A156AD1B4AB33B0086BBBA /* CoreStatus.m */; };
+		89A156B31B4AB76C0086BBBA /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 89A156B21B4AB76C0086BBBA /* Reachability.m */; };
 		EE8228A11AC16D20004049D7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = EE8228A01AC16D20004049D7 /* main.m */; };
 		EE8228A41AC16D20004049D7 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = EE8228A31AC16D20004049D7 /* AppDelegate.m */; };
 		EE8228A71AC16D20004049D7 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EE8228A61AC16D20004049D7 /* ViewController.m */; };
@@ -14,8 +16,6 @@
 		EE8228AC1AC16D20004049D7 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EE8228AB1AC16D20004049D7 /* Images.xcassets */; };
 		EE8228AF1AC16D20004049D7 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = EE8228AD1AC16D20004049D7 /* LaunchScreen.xib */; };
 		EE8228BB1AC16D20004049D7 /* CoreStatusTests.m in Sources */ = {isa = PBXBuildFile; fileRef = EE8228BA1AC16D20004049D7 /* CoreStatusTests.m */; };
-		EE8228CA1AC16D29004049D7 /* CoreStatus.m in Sources */ = {isa = PBXBuildFile; fileRef = EE8228C61AC16D29004049D7 /* CoreStatus.m */; };
-		EE8228CB1AC16D29004049D7 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = EE8228C91AC16D29004049D7 /* Reachability.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -29,6 +29,13 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		89A156AC1B4AB33B0086BBBA /* CoreStatus.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreStatus.h; sourceTree = "<group>"; };
+		89A156AD1B4AB33B0086BBBA /* CoreStatus.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CoreStatus.m; sourceTree = "<group>"; };
+		89A156B11B4AB76C0086BBBA /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
+		89A156B21B4AB76C0086BBBA /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
+		89A156B41B4AB7C80086BBBA /* CoreNetworkStatus.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CoreNetworkStatus.h; sourceTree = "<group>"; };
+		89A156B61B4AB8B30086BBBA /* CoreStatusSingleton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreStatusSingleton.h; sourceTree = "<group>"; };
+		89A156BA1B4AC1C10086BBBA /* CoreStatusProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CoreStatusProtocol.h; sourceTree = "<group>"; };
 		EE82289B1AC16D20004049D7 /* CoreStatus.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CoreStatus.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EE82289F1AC16D20004049D7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		EE8228A01AC16D20004049D7 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -42,10 +49,6 @@
 		EE8228B41AC16D20004049D7 /* CoreStatusTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CoreStatusTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		EE8228B91AC16D20004049D7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		EE8228BA1AC16D20004049D7 /* CoreStatusTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CoreStatusTests.m; sourceTree = "<group>"; };
-		EE8228C51AC16D29004049D7 /* CoreStatus.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreStatus.h; sourceTree = "<group>"; };
-		EE8228C61AC16D29004049D7 /* CoreStatus.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CoreStatus.m; sourceTree = "<group>"; };
-		EE8228C81AC16D29004049D7 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
-		EE8228C91AC16D29004049D7 /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -66,6 +69,34 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		89A156AF1B4AB76C0086BBBA /* Lib */ = {
+			isa = PBXGroup;
+			children = (
+				89A156B51B4AB8B30086BBBA /* Singleton */,
+				89A156B01B4AB76C0086BBBA /* Reachability */,
+				89A156B41B4AB7C80086BBBA /* CoreNetworkStatus.h */,
+				89A156BA1B4AC1C10086BBBA /* CoreStatusProtocol.h */,
+			);
+			path = Lib;
+			sourceTree = "<group>";
+		};
+		89A156B01B4AB76C0086BBBA /* Reachability */ = {
+			isa = PBXGroup;
+			children = (
+				89A156B11B4AB76C0086BBBA /* Reachability.h */,
+				89A156B21B4AB76C0086BBBA /* Reachability.m */,
+			);
+			path = Reachability;
+			sourceTree = "<group>";
+		};
+		89A156B51B4AB8B30086BBBA /* Singleton */ = {
+			isa = PBXGroup;
+			children = (
+				89A156B61B4AB8B30086BBBA /* CoreStatusSingleton.h */,
+			);
+			path = Singleton;
+			sourceTree = "<group>";
+		};
 		EE8228921AC16D20004049D7 = {
 			isa = PBXGroup;
 			children = (
@@ -129,20 +160,11 @@
 		EE8228C41AC16D29004049D7 /* CoreStatus */ = {
 			isa = PBXGroup;
 			children = (
-				EE8228C51AC16D29004049D7 /* CoreStatus.h */,
-				EE8228C61AC16D29004049D7 /* CoreStatus.m */,
-				EE8228C71AC16D29004049D7 /* Reachability */,
+				89A156AC1B4AB33B0086BBBA /* CoreStatus.h */,
+				89A156AD1B4AB33B0086BBBA /* CoreStatus.m */,
+				89A156AF1B4AB76C0086BBBA /* Lib */,
 			);
 			path = CoreStatus;
-			sourceTree = "<group>";
-		};
-		EE8228C71AC16D29004049D7 /* Reachability */ = {
-			isa = PBXGroup;
-			children = (
-				EE8228C81AC16D29004049D7 /* Reachability.h */,
-				EE8228C91AC16D29004049D7 /* Reachability.m */,
-			);
-			path = Reachability;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -245,11 +267,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EE8228CA1AC16D29004049D7 /* CoreStatus.m in Sources */,
+				89A156AE1B4AB33B0086BBBA /* CoreStatus.m in Sources */,
 				EE8228A71AC16D20004049D7 /* ViewController.m in Sources */,
 				EE8228A41AC16D20004049D7 /* AppDelegate.m in Sources */,
 				EE8228A11AC16D20004049D7 /* main.m in Sources */,
-				EE8228CB1AC16D29004049D7 /* Reachability.m in Sources */,
+				89A156B31B4AB76C0086BBBA /* Reachability.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -440,6 +462,7 @@
 				EE8228C01AC16D20004049D7 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		EE8228C11AC16D20004049D7 /* Build configuration list for PBXNativeTarget "CoreStatusTests" */ = {
 			isa = XCConfigurationList;
@@ -448,6 +471,7 @@
 				EE8228C31AC16D20004049D7 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
