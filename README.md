@@ -72,7 +72,7 @@
     //调用一个方法即可
     [CoreStatus beginNotiNetwork:self];
 
-请注意这个方法需要一个 id<CoreStatusProtocol> 遵循了此协议(id<CoreStatusProtocol>)的对象，一般控制器遵循此协议：
+请注意这个方法需要一个 CoreStatusProtocol遵循了此协议(id<CoreStatusProtocol>)的对象，一般控制器遵循此协议：
 然后请实现以下协议方法（optional）：
 
     -(void)coreNetworkChangeNoti:(NSNotification *)noti;
