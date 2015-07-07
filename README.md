@@ -76,13 +76,18 @@
 然后请实现以下协议方法（optional）：
 
     -(void)coreNetworkChangeNoti:(NSNotification *)noti;
+    
 
-注意：当网络改变，此协议方法会自行触发，我传了通知数据给你，示例有打印通知内容。
-当然，最简单的获取当前实时状态的方法是使用上面的静态状态获取，即：
+        注意：当网络改变，此协议方法会自行触发，我传了通知数据给你，示例有打印通知内容。
+        当然，最简单的获取当前实时状态的方法是使用上面的静态状态获取，即：
+        
+        -(void)coreNetworkChangeNoti:(NSNotification *)noti{
+            //因为这些是实时，所以每次的静态状态就是当前实时状态，你也可以从noti中取
+            CoreNetWorkStatus currentStatus = [CoreStatus currentNetWorkStatus];
+        }
 
--(void)coreNetworkChangeNoti:(NSNotification *)noti{
-    //因为这些是实时，所以每次的静态状态就是当前实时状态，你也可以从noti中取
-    CoreNetWorkStatus currentStatus = [CoreStatus currentNetWorkStatus];
-}
+<br/><br/>
 
+#### 结束语
+其实有很多方法可以完成同样的事情，思路其实都是一样的。快加入组织回到组织的怀抱吧！
 <br/><br/>
