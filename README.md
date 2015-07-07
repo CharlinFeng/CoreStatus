@@ -116,5 +116,5 @@
 
 开源许可 License
 ===============
-CoreStatus基于MIT license.您可点击License文件查看详情。
+Charlin Feng的框架基于MIT license.您可点击License文件查看详情。
 <br/><br/>
