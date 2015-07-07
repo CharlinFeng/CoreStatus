@@ -10,6 +10,7 @@
 #import <CoreTelephony/CTTelephonyNetworkInfo.h>
 
 
+static NSString *const CoreStatusChangedNoti = @"CoreStatusChangedNoti";
 
 
 @interface CoreStatus ()
@@ -112,13 +113,16 @@ HMSingletonM(CoreStatus)
     }
     
     //注册监听
-    [[NSNotificationCenter defaultCenter] addObserver:listener selector:@selector(coreNetworkChangeNoti:) name:kReachabilityChangedNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:listener selector:@selector(coreNetworkChangeNoti:) name:CTRadioAccessTechnologyDidChangeNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:listener selector:@selector(coreNetworkChangeNoti:) name:CoreStatusChangedNoti object:status];
+    [[NSNotificationCenter defaultCenter] addObserver:status selector:@selector(coreNetWorkStatusChanged:) name:kReachabilityChangedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:status selector:@selector(coreNetWorkStatusChanged:) name:CTRadioAccessTechnologyDidChangeNotification object:nil];
 
     [status.reachability startNotifier];
     
     //标记
     status.isNoti = YES;
+    
+
 }
 
 
@@ -138,22 +142,36 @@ HMSingletonM(CoreStatus)
     }
     
     //解除监听
-    [[NSNotificationCenter defaultCenter] removeObserver:listener name:kReachabilityChangedNotification object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:listener name:CTRadioAccessTechnologyDidChangeNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:status name:kReachabilityChangedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:status name:CTRadioAccessTechnologyDidChangeNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:listener name:CoreStatusChangedNoti object:status];
     
     //标记
     status.isNoti = NO;
+    
+
 }
 
-- (void)CoreNetWorkStatusChanged:(NSNotification *)notification
+
+
+
+
+
+
+- (void)coreNetWorkStatusChanged:(NSNotification *)notification
 {
     //发送通知
     
     if (notification.name == CTRadioAccessTechnologyDidChangeNotification &&
         notification.object != nil) {
         
-        _currentRaioAccess = _telephonyNetworkInfo.currentRadioAccessTechnology;
+        self.currentRaioAccess = self.telephonyNetworkInfo.currentRadioAccessTechnology;
     }
+    
+    //再次发出通知
+    NSDictionary *userInfo = @{@"currentStatusEnum":@([CoreStatus currentNetWorkStatus]),@"currentStatusString":[CoreStatus currentNetWorkStatusString]};
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:CoreStatusChangedNoti object:self userInfo:userInfo];
 }
 
 
