@@ -31,9 +31,7 @@ static NSString *const CoreStatusChangedNoti = @"CoreStatusChangedNoti";
 
 @property (nonatomic,strong) Reachability *reachability;
 
-@property (nonatomic,strong) CTTelephonyNetworkInfo *telephonyNetworkInfo;
-
-@property (nonatomic,copy) NSString *currentRaioAccess;
+@property (nonatomic,copy) NSString *currentRadioAccessTechnology;
 
 /** 是否正在监听 */
 @property (nonatomic,assign) BOOL isNoti;
@@ -44,20 +42,18 @@ static NSString *const CoreStatusChangedNoti = @"CoreStatusChangedNoti";
 
 
 @implementation CoreStatus
-HMSingletonM(CoreStatus)
-
-
-#pragma mark - Class Methods
-+(void)initialize{
++ (instancetype)sharedCoreStatus{
     
-    CoreStatus *status = [CoreStatus sharedCoreStatus];
-    [[NSNotificationCenter defaultCenter] addObserver:status selector:@selector(coreNetWorkStatusChanged:) name:kReachabilityChangedNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:status selector:@selector(coreNetWorkStatusChanged:) name:CTRadioAccessTechnologyDidChangeNotification object:nil];
-    
-    [status.reachability startNotifier];
-    status.telephonyNetworkInfo =  [[CTTelephonyNetworkInfo alloc] init];
+    static CoreStatus *_instace = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        _instace = [[CoreStatus alloc] init];
+        [_instace setup];
+    });
+    return _instace;
 }
 
+#pragma mark - Class Methods
 /** 获取当前网络状态：枚举 */
 +(CoreNetWorkStatus)currentNetWorkStatus{
     
@@ -79,6 +75,7 @@ HMSingletonM(CoreStatus)
 +(void)addNetworkStatusListener:(NSString *)listenerName withDidChangeBlock:(CSStatusDidChangedBlock)block{
     CoreStatus *status = [CoreStatus sharedCoreStatus];
     if (listenerName && block) {
+        block([CoreStatus currentNetWorkStatusString],[CoreStatus currentNetWorkStatus]);
         [status.blockDict setObject:block forKey:listenerName];
     }
 }
@@ -111,74 +108,18 @@ HMSingletonM(CoreStatus)
 }
 
 #pragma mark - Private Methods
-
--(Reachability *)reachability{
-    
-    if(_reachability == nil){
-        
-        _reachability = [Reachability reachabilityForInternetConnection];
-    }
-    
-    return _reachability;
+- (void)setup{
+    self.currentRadioAccessTechnology = [CTTelephonyNetworkInfo new].currentRadioAccessTechnology;
+    [self.reachability startNotifier];
+    [self addNotification];
 }
-
-
--(CTTelephonyNetworkInfo *)telephonyNetworkInfo{
-    
-    if(_telephonyNetworkInfo == nil){
-        
-        _telephonyNetworkInfo = [[CTTelephonyNetworkInfo alloc] init];
-        
-    }
-    
-    return _telephonyNetworkInfo;
-}
-
-
--(NSString *)currentRaioAccess{
-    
-    if(_currentRaioAccess == nil){
-        
-        _currentRaioAccess = self.telephonyNetworkInfo.currentRadioAccessTechnology;
-    }
-    
-    return _currentRaioAccess;
-}
-
-
-- (void)coreNetWorkStatusChanged:(NSNotification *)notification
-{
-    //发送通知
-    
-    if (notification.name == CTRadioAccessTechnologyDidChangeNotification &&
-        notification.object != nil) {
-        
-        self.currentRaioAccess = self.telephonyNetworkInfo.currentRadioAccessTechnology;
-    }
-    
-    for (id key in self.blockDict) {
-        CSStatusDidChangedBlock block = [self.blockDict objectForKey:key];
-        block([CoreStatus currentNetWorkStatusString],[CoreStatus currentNetWorkStatus]);
-    }
-    
-    //兼容旧版本
-    //发出通知
-    NSDictionary *userInfo = @{@"currentStatusEnum":@([CoreStatus currentNetWorkStatus]),@"currentStatusString":[CoreStatus currentNetWorkStatusString]};
-    [[NSNotificationCenter defaultCenter] postNotificationName:CoreStatusChangedNoti object:self userInfo:userInfo];
-}
-
-
-
-
 
 - (CoreNetWorkStatus)statusWithRadioAccessTechnology{
     
     CoreNetWorkStatus status = (CoreNetWorkStatus)[self.reachability currentReachabilityStatus];
     
-    NSString *technology = self.currentRaioAccess;
-    
-    if (status == CoreNetWorkStatusWWAN &&
-        technology != nil) {
+    NSString *technology = self.currentRadioAccessTechnology;
+    if (status == CoreNetWorkStatusWWAN && technology != nil) {
         
         if ([self.technology2GArray containsObject:technology]){
         
@@ -191,19 +132,63 @@ HMSingletonM(CoreStatus)
         else if ([self.technology4GArray containsObject:technology]){
             status = CoreNetWorkStatus4G;
         }
-        
     }
-    
     return status;
 }
 
 /**移除监听*/
 - (void)removeNotificationObserver{
-    CoreStatus *status = [CoreStatus sharedCoreStatus];
-    [[NSNotificationCenter defaultCenter] removeObserver:status name:kReachabilityChangedNotification object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:status name:CTRadioAccessTechnologyDidChangeNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kReachabilityChangedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"UIApplicationDidBecomeActiveNotification" object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:CTRadioAccessTechnologyDidChangeNotification object:nil];
 }
+
+
+- (void)addNotification{
+    
+    //移除旧的监听
+    [self removeNotificationObserver];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(networkDidChangeNoti:) name:kReachabilityChangedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(networkDidChangeNoti:) name:CTRadioAccessTechnologyDidChangeNotification object:nil];
+
+ 
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(becomeActive) name:@"UIApplicationDidBecomeActiveNotification" object:nil];
+}
+
+- (void)networkDidChangeNoti:(NSNotification *)noti{
+
+    if ([noti.name isEqualToString:CTRadioAccessTechnologyDidChangeNotification]) {
+        self.currentRadioAccessTechnology = noti.object;
+    }
+    
+    NSString *currentNetWorkStatusString = [CoreStatus currentNetWorkStatusString];
+    CoreNetWorkStatus currentNetWorkStatus = [CoreStatus currentNetWorkStatus];
+    for (id key in self.blockDict) {
+        CSStatusDidChangedBlock block = [self.blockDict objectForKey:key];
+        block(currentNetWorkStatusString,currentNetWorkStatus);
+    }
+    
+    //兼容旧版本
+    //发出通知
+    NSDictionary *userInfo = @{@"currentStatusEnum":@(currentNetWorkStatus),@"currentStatusString":currentNetWorkStatusString?:@""};
+    [[NSNotificationCenter defaultCenter] postNotificationName:CoreStatusChangedNoti object:self userInfo:userInfo];
+}
+
+- (void)becomeActive{
+     self.currentRadioAccessTechnology = [CTTelephonyNetworkInfo new].currentRadioAccessTechnology;
+}
+
 #pragma mark - Getter
+-(Reachability *)reachability{
+    
+    if(_reachability == nil){
+        
+        _reachability = [Reachability reachabilityForInternetConnection];
+    }
+    
+    return _reachability;
+}
 
 /*
  *  懒加载
@@ -283,13 +268,10 @@ HMSingletonM(CoreStatus)
         [self endNotiNetwork:(id<CoreStatusProtocol>)listener];
     }
 
-    //移除旧的监听
-    [status removeNotificationObserver];
     
     //注册监听
     [[NSNotificationCenter defaultCenter] addObserver:listener selector:@selector(coreNetworkChangeNoti:) name:CoreStatusChangedNoti object:status];
-    [[NSNotificationCenter defaultCenter] addObserver:status selector:@selector(coreNetWorkStatusChanged:) name:kReachabilityChangedNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:status selector:@selector(coreNetWorkStatusChanged:) name:CTRadioAccessTechnologyDidChangeNotification object:nil];
+    [status addNotification];
     
     [status.reachability startNotifier];
     
@@ -307,9 +289,9 @@ HMSingletonM(CoreStatus)
         NSLog(@"CoreStatus监听已经被关闭"); return;
     }
     
-    //解除监听
-    [status removeNotificationObserver];
+    //监听
     [[NSNotificationCenter defaultCenter] removeObserver:listener name:CoreStatusChangedNoti object:status];
+    [status removeNotificationObserver];
     
     //标记
     status.isNoti = NO;

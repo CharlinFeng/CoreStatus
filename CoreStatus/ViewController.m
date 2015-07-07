@@ -15,15 +15,16 @@
 
 @property (weak, nonatomic) IBOutlet UILabel *showLabel;
 
-
 @end
 
-#define kListenerName   @"可以有很多歌Listener同时监听网络状态的"
+#define kListenerName_1   @"kListenerName_1"
+#define kListenerName_2   @"kListenerName_2"
 
 @implementation ViewController
 - (void)dealloc
 {
-    [CoreStatus remobeNetworkStatusListener:kListenerName];
+    [CoreStatus remobeNetworkStatusListener:kListenerName_1];
+    [CoreStatus remobeNetworkStatusListener:kListenerName_2];
 }
 
 - (void)viewDidLoad {
@@ -31,15 +32,25 @@
     
     NSString * statusString = [CoreStatus currentNetWorkStatusString];
     
-    NSLog(@"%@",statusString);
+    NSLog(@"currentNetWorkStatusString :%@",statusString);
     
     /** Method deprecated [CoreStatus beginNotiNetwork:self]; */
-    self.showLabel.text = [CoreStatus currentNetWorkStatusString];
-    [CoreStatus addNetworkStatusListener:kListenerName withDidChangeBlock:^(NSString *statusName, CoreNetWorkStatus status) {
+    
+    //可以有很多个Listener同时监听网络状态的
+    [CoreStatus addNetworkStatusListener:kListenerName_1 withDidChangeBlock:^(NSString *statusName, CoreNetWorkStatus status) {
+        NSLog(@"block 1 invoke");
+    }];
+    
+    [CoreStatus addNetworkStatusListener:kListenerName_1 withDidChangeBlock:^(NSString *statusName, CoreNetWorkStatus status) {
+        NSLog(@"block 2 invoke");
         
         NSLog(@"%@\n",statusName);
         self.showLabel.text = statusName;
-        [self.showLabel.layer transitionWithAnimType:TransitionAnimTypeRamdom subType:TransitionSubtypesFromRamdom curve:TransitionCurveRamdom duration:.5f];
+        [self.showLabel.layer transitionWithAnimType:TransitionAnimTypeReveal subType:TransitionSubtypesFromTop curve:TransitionCurveEaseInEaseOut duration:.5f];
+    }];
+    
+    [CoreStatus addNetworkStatusListener:kListenerName_2 withDidChangeBlock:^(NSString *statusName, CoreNetWorkStatus status) {
+        NSLog(@"block 3 invoke");
     }];
 }
 

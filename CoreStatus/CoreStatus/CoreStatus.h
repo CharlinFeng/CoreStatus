@@ -9,13 +9,12 @@
 #import <Foundation/Foundation.h>
 #import "Reachability.h"
 #import "CoreNetWorkStatus.h"
-#import "CoreStatusSingleton.h"
 
 typedef void (^CSStatusDidChangedBlock) (NSString *statusName,CoreNetWorkStatus status);
 
 @interface CoreStatus : NSObject
-HMSingletonH(CoreStatus)
 
++ (instancetype)sharedCoreStatus;
 
 /** 获取当前网络状态：枚举 */
 +(CoreNetWorkStatus)currentNetWorkStatus;

@@ -31,12 +31,12 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		71CBF1E01B4BADA400146FCA /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
 		89A156AC1B4AB33B0086BBBA /* CoreStatus.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreStatus.h; sourceTree = "<group>"; };
 		89A156AD1B4AB33B0086BBBA /* CoreStatus.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CoreStatus.m; sourceTree = "<group>"; };
 		89A156B11B4AB76C0086BBBA /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
 		89A156B21B4AB76C0086BBBA /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
 		89A156B41B4AB7C80086BBBA /* CoreNetworkStatus.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CoreNetworkStatus.h; sourceTree = "<group>"; };
-		89A156B61B4AB8B30086BBBA /* CoreStatusSingleton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreStatusSingleton.h; sourceTree = "<group>"; };
 		89D097951B4B7C4C005C83FF /* CALayer+Transition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CALayer+Transition.h"; sourceTree = "<group>"; };
 		89D097961B4B7C4C005C83FF /* CALayer+Transition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "CALayer+Transition.m"; sourceTree = "<group>"; };
 		89D097981B4B7ED1005C83FF /* show.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = show.gif; sourceTree = "<group>"; };
@@ -76,7 +76,6 @@
 		89A156AF1B4AB76C0086BBBA /* Lib */ = {
 			isa = PBXGroup;
 			children = (
-				89A156B51B4AB8B30086BBBA /* Singleton */,
 				89A156B01B4AB76C0086BBBA /* Reachability */,
 				89A156B41B4AB7C80086BBBA /* CoreNetworkStatus.h */,
 			);
@@ -92,14 +91,6 @@
 			path = Reachability;
 			sourceTree = "<group>";
 		};
-		89A156B51B4AB8B30086BBBA /* Singleton */ = {
-			isa = PBXGroup;
-			children = (
-				89A156B61B4AB8B30086BBBA /* CoreStatusSingleton.h */,
-			);
-			path = Singleton;
-			sourceTree = "<group>";
-		};
 		89D097941B4B7BFD005C83FF /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -112,6 +103,7 @@
 		EE8228921AC16D20004049D7 = {
 			isa = PBXGroup;
 			children = (
+				71CBF1E01B4BADA400146FCA /* CoreTelephony.framework */,
 				EE82289D1AC16D20004049D7 /* CoreStatus */,
 				EE8228B71AC16D20004049D7 /* CoreStatusTests */,
 				EE82289C1AC16D20004049D7 /* Products */,
@@ -410,6 +402,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = CoreStatus/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -422,6 +415,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				INFOPLIST_FILE = CoreStatus/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
