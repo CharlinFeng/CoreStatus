@@ -67,7 +67,7 @@
 
 
 <br/><br/>
-#### 4.实时监控
+#### 4.实时监控：注意监听
 
     //调用一个方法即可
     [CoreStatus beginNotiNetwork:self];
@@ -90,6 +90,20 @@
 
 <br/><br/>
 
+#### 5.实时监控：关闭监听
+请特别注意：因为内部封装，所以你看不到监听过程，实际内部已经注册了通知。请注意用完需要关闭监听。
+比如控制器不可见需要关闭监听：
+
+    -(void)viewDidDisappear:(BOOL)animated{
+        
+        [super viewDidDisappear:animated];
+        
+        [CoreStatus endNotiNetwork:self];
+    }
+
+
+
+<br/><br/>
 #### 致谢 THANKS
 感谢一号群成都iOS开发_Charlin（163865401，群已满）朋友深夜测试！！！感谢！
 
