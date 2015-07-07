@@ -46,6 +46,12 @@ HMSingletonM(CoreStatus)
 
 
 
++(void)initialize{
+
+    CoreStatus *status = [CoreStatus sharedCoreStatus];
+    status.telephonyNetworkInfo =  [[CTTelephonyNetworkInfo alloc] init];
+}
+
 
 
 
@@ -257,6 +263,33 @@ HMSingletonM(CoreStatus)
     }
     
     return _coreNetworkStatusStringArray;
+}
+
+
+
+
+
+
+
+/** 是否是Wifi */
++(BOOL)isWifiEnable{
+    
+    return [self currentNetWorkStatus] == CoreNetWorkStatusWifi;
+}
+
+
+/** 是否有网络 */
++(BOOL)isNetworkEnable{
+    
+    CoreNetWorkStatus networkStatus = [self currentNetWorkStatus];
+    
+    return networkStatus!=CoreNetWorkStatusUnkhow && networkStatus != CoreNetWorkStatusNone;
+}
+
+/** 是否处于高速网络环境：3G、4G、Wifi */
++(BOOL)isHighSpeedNetwork{
+    CoreNetWorkStatus networkStatus = [self currentNetWorkStatus];
+    return networkStatus == CoreNetWorkStatus3G || networkStatus == CoreNetWorkStatus4G || networkStatus == CoreNetWorkStatusWifi;
 }
 
 @end

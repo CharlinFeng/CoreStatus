@@ -132,8 +132,8 @@
 		EE82289D1AC16D20004049D7 /* CoreStatus */ = {
 			isa = PBXGroup;
 			children = (
-				89D097941B4B7BFD005C83FF /* Frameworks */,
 				EE8228C41AC16D29004049D7 /* CoreStatus */,
+				89D097941B4B7BFD005C83FF /* Frameworks */,
 				EE8228A21AC16D20004049D7 /* AppDelegate.h */,
 				EE8228A31AC16D20004049D7 /* AppDelegate.m */,
 				EE8228A51AC16D20004049D7 /* ViewController.h */,

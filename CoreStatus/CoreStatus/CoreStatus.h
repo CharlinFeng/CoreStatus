@@ -33,4 +33,18 @@ HMSingletonH(CoreStatus)
 
 
 
+/*
+ *  新增API
+ */
+/** 是否是Wifi */
++(BOOL)isWifiEnable;
+
+/** 是否有网络 */
++(BOOL)isNetworkEnable;
+
+/** 是否处于高速网络环境：3G、4G、Wifi */
++(BOOL)isHighSpeedNetwork;
+
+
+
 @end
