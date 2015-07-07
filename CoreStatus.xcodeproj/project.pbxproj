@@ -37,7 +37,6 @@
 		89A156B21B4AB76C0086BBBA /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
 		89A156B41B4AB7C80086BBBA /* CoreNetworkStatus.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CoreNetworkStatus.h; sourceTree = "<group>"; };
 		89A156B61B4AB8B30086BBBA /* CoreStatusSingleton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreStatusSingleton.h; sourceTree = "<group>"; };
-		89A156BA1B4AC1C10086BBBA /* CoreStatusProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CoreStatusProtocol.h; sourceTree = "<group>"; };
 		89D097951B4B7C4C005C83FF /* CALayer+Transition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CALayer+Transition.h"; sourceTree = "<group>"; };
 		89D097961B4B7C4C005C83FF /* CALayer+Transition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "CALayer+Transition.m"; sourceTree = "<group>"; };
 		89D097981B4B7ED1005C83FF /* show.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = show.gif; sourceTree = "<group>"; };
@@ -80,7 +79,6 @@
 				89A156B51B4AB8B30086BBBA /* Singleton */,
 				89A156B01B4AB76C0086BBBA /* Reachability */,
 				89A156B41B4AB7C80086BBBA /* CoreNetworkStatus.h */,
-				89A156BA1B4AC1C10086BBBA /* CoreStatusProtocol.h */,
 			);
 			path = Lib;
 			sourceTree = "<group>";

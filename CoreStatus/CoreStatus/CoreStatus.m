@@ -14,6 +14,8 @@ static NSString *const CoreStatusChangedNoti = @"CoreStatusChangedNoti";
 
 
 @interface CoreStatus ()
+/** Block容器 */
+@property (nonatomic,strong) NSMutableDictionary *blockDict;
 
 /** 2G数组 */
 @property (nonatomic,strong) NSArray *technology2GArray;
@@ -45,15 +47,16 @@ static NSString *const CoreStatusChangedNoti = @"CoreStatusChangedNoti";
 HMSingletonM(CoreStatus)
 
 
-
+#pragma mark - Class Methods
 +(void)initialize{
-
+    
     CoreStatus *status = [CoreStatus sharedCoreStatus];
+    [[NSNotificationCenter defaultCenter] addObserver:status selector:@selector(coreNetWorkStatusChanged:) name:kReachabilityChangedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:status selector:@selector(coreNetWorkStatusChanged:) name:CTRadioAccessTechnologyDidChangeNotification object:nil];
+    
+    [status.reachability startNotifier];
     status.telephonyNetworkInfo =  [[CTTelephonyNetworkInfo alloc] init];
 }
-
-
-
 
 /** 获取当前网络状态：枚举 */
 +(CoreNetWorkStatus)currentNetWorkStatus{
@@ -71,6 +74,43 @@ HMSingletonM(CoreStatus)
     
     return status.coreNetworkStatusStringArray[[self currentNetWorkStatus]];
 }
+
+/** 开始网络监听 */
++(void)addNetworkStatusListener:(NSString *)listenerName withDidChangeBlock:(CSStatusDidChangedBlock)block{
+    CoreStatus *status = [CoreStatus sharedCoreStatus];
+    if (listenerName && block) {
+        [status.blockDict setObject:block forKey:listenerName];
+    }
+}
+
+/** 移除网络监听 */
++(void)remobeNetworkStatusListener:(NSString *)listenerName{
+    CoreStatus *status = [CoreStatus sharedCoreStatus];
+    [status.blockDict removeObjectForKey:listenerName];
+}
+
+/** 是否是Wifi */
++(BOOL)isWifiEnable{
+    
+    return [self currentNetWorkStatus] == CoreNetWorkStatusWifi;
+}
+
+
+/** 是否有网络 */
++(BOOL)isNetworkEnable{
+    
+    CoreNetWorkStatus networkStatus = [self currentNetWorkStatus];
+    
+    return networkStatus!=CoreNetWorkStatusUnkhow && networkStatus != CoreNetWorkStatusNone;
+}
+
+/** 是否处于高速网络环境：3G、4G、Wifi */
++(BOOL)isHighSpeedNetwork{
+    CoreNetWorkStatus networkStatus = [self currentNetWorkStatus];
+    return networkStatus == CoreNetWorkStatus3G || networkStatus == CoreNetWorkStatus4G || networkStatus == CoreNetWorkStatusWifi;
+}
+
+#pragma mark - Private Methods
 
 -(Reachability *)reachability{
     
@@ -106,64 +146,6 @@ HMSingletonM(CoreStatus)
 }
 
 
-/** 开始网络监听 */
-+(void)beginNotiNetwork:(id<CoreStatusProtocol>)listener{
-    
-    CoreStatus *status = [CoreStatus sharedCoreStatus];
-    
-    if(status.isNoti){
-    
-        NSLog(@"CoreStatus已经处于监听中，请检查其他页面是否关闭监听！");
-        
-        [self endNotiNetwork:(id<CoreStatusProtocol>)listener];
-    }
-    
-    //注册监听
-    [[NSNotificationCenter defaultCenter] addObserver:listener selector:@selector(coreNetworkChangeNoti:) name:CoreStatusChangedNoti object:status];
-    [[NSNotificationCenter defaultCenter] addObserver:status selector:@selector(coreNetWorkStatusChanged:) name:kReachabilityChangedNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:status selector:@selector(coreNetWorkStatusChanged:) name:CTRadioAccessTechnologyDidChangeNotification object:nil];
-
-    [status.reachability startNotifier];
-    
-    //标记
-    status.isNoti = YES;
-    
-
-}
-
-
-
-
-
-
-
-/** 停止网络监听 */
-+(void)endNotiNetwork:(id<CoreStatusProtocol>)listener{
-    
-    CoreStatus *status = [CoreStatus sharedCoreStatus];
-    
-    if(!status.isNoti){
-        
-        NSLog(@"CoreStatus监听已经被关闭"); return;
-    }
-    
-    //解除监听
-    [[NSNotificationCenter defaultCenter] removeObserver:status name:kReachabilityChangedNotification object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:status name:CTRadioAccessTechnologyDidChangeNotification object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:listener name:CoreStatusChangedNoti object:status];
-    
-    //标记
-    status.isNoti = NO;
-    
-
-}
-
-
-
-
-
-
-
 - (void)coreNetWorkStatusChanged:(NSNotification *)notification
 {
     //发送通知
@@ -174,9 +156,14 @@ HMSingletonM(CoreStatus)
         self.currentRaioAccess = self.telephonyNetworkInfo.currentRadioAccessTechnology;
     }
     
-    //再次发出通知
-    NSDictionary *userInfo = @{@"currentStatusEnum":@([CoreStatus currentNetWorkStatus]),@"currentStatusString":[CoreStatus currentNetWorkStatusString]};
+    for (id key in self.blockDict) {
+        CSStatusDidChangedBlock block = [self.blockDict objectForKey:key];
+        block([CoreStatus currentNetWorkStatusString],[CoreStatus currentNetWorkStatus]);
+    }
     
+    //兼容旧版本
+    //发出通知
+    NSDictionary *userInfo = @{@"currentStatusEnum":@([CoreStatus currentNetWorkStatus]),@"currentStatusString":[CoreStatus currentNetWorkStatusString]};
     [[NSNotificationCenter defaultCenter] postNotificationName:CoreStatusChangedNoti object:self userInfo:userInfo];
 }
 
@@ -210,9 +197,25 @@ HMSingletonM(CoreStatus)
     return status;
 }
 
+/**移除监听*/
+- (void)removeNotificationObserver{
+    CoreStatus *status = [CoreStatus sharedCoreStatus];
+    [[NSNotificationCenter defaultCenter] removeObserver:status name:kReachabilityChangedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:status name:CTRadioAccessTechnologyDidChangeNotification object:nil];
+}
+#pragma mark - Getter
+
 /*
  *  懒加载
  */
+- (NSMutableDictionary *)blockDict{
+    
+    if (nil==_blockDict) {
+        _blockDict = [NSMutableDictionary dictionary];
+    }
+    return _blockDict;
+}
+
 /** 2G数组 */
 -(NSArray *)technology2GArray{
     
@@ -264,32 +267,51 @@ HMSingletonM(CoreStatus)
     
     return _coreNetworkStatusStringArray;
 }
+@end
 
-
-
-
-
-
-
-/** 是否是Wifi */
-+(BOOL)isWifiEnable{
+#pragma mark - CoreStatusDeprecated
+@implementation CoreStatus (CoreStatusDeprecated)
+/** 开始网络监听 */
++(void)beginNotiNetwork:(id<CoreStatusProtocol>)listener{
     
-    return [self currentNetWorkStatus] == CoreNetWorkStatusWifi;
+    CoreStatus *status = [CoreStatus sharedCoreStatus];
+    
+    if(status.isNoti){
+        
+        NSLog(@"CoreStatus已经处于监听中，请检查其他页面是否关闭监听！");
+        
+        [self endNotiNetwork:(id<CoreStatusProtocol>)listener];
+    }
+
+    //移除旧的监听
+    [status removeNotificationObserver];
+    
+    //注册监听
+    [[NSNotificationCenter defaultCenter] addObserver:listener selector:@selector(coreNetworkChangeNoti:) name:CoreStatusChangedNoti object:status];
+    [[NSNotificationCenter defaultCenter] addObserver:status selector:@selector(coreNetWorkStatusChanged:) name:kReachabilityChangedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:status selector:@selector(coreNetWorkStatusChanged:) name:CTRadioAccessTechnologyDidChangeNotification object:nil];
+    
+    [status.reachability startNotifier];
+    
+    //标记
+    status.isNoti = YES;
 }
 
-
-/** 是否有网络 */
-+(BOOL)isNetworkEnable{
+/** 停止网络监听 */
++(void)endNotiNetwork:(id<CoreStatusProtocol>)listener{
     
-    CoreNetWorkStatus networkStatus = [self currentNetWorkStatus];
+    CoreStatus *status = [CoreStatus sharedCoreStatus];
     
-    return networkStatus!=CoreNetWorkStatusUnkhow && networkStatus != CoreNetWorkStatusNone;
+    if(!status.isNoti){
+        
+        NSLog(@"CoreStatus监听已经被关闭"); return;
+    }
+    
+    //解除监听
+    [status removeNotificationObserver];
+    [[NSNotificationCenter defaultCenter] removeObserver:listener name:CoreStatusChangedNoti object:status];
+    
+    //标记
+    status.isNoti = NO;
 }
-
-/** 是否处于高速网络环境：3G、4G、Wifi */
-+(BOOL)isHighSpeedNetwork{
-    CoreNetWorkStatus networkStatus = [self currentNetWorkStatus];
-    return networkStatus == CoreNetWorkStatus3G || networkStatus == CoreNetWorkStatus4G || networkStatus == CoreNetWorkStatusWifi;
-}
-
 @end

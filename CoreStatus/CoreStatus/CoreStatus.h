@@ -10,9 +10,8 @@
 #import "Reachability.h"
 #import "CoreNetWorkStatus.h"
 #import "CoreStatusSingleton.h"
-#import "CoreStatusProtocol.h"
 
-
+typedef void (^CSStatusDidChangedBlock) (NSString *statusName,CoreNetWorkStatus status);
 
 @interface CoreStatus : NSObject
 HMSingletonH(CoreStatus)
@@ -24,13 +23,10 @@ HMSingletonH(CoreStatus)
 /** 获取当前网络状态：字符串 */
 +(NSString *)currentNetWorkStatusString;
 
-
-/** 开始网络监听 */
-+(void)beginNotiNetwork:(id<CoreStatusProtocol>)listener;
-
-/** 停止网络监听 */
-+(void)endNotiNetwork:(id<CoreStatusProtocol>)listener;
-
+/** 添加监听 */
++(void)addNetworkStatusListener:(NSString *)listenerName withDidChangeBlock:(CSStatusDidChangedBlock)block;
+/** 移除监听 */
++(void)remobeNetworkStatusListener:(NSString *)listenerName;
 
 
 /*
@@ -44,7 +40,28 @@ HMSingletonH(CoreStatus)
 
 /** 是否处于高速网络环境：3G、4G、Wifi */
 +(BOOL)isHighSpeedNetwork;
+@end
 
 
+#pragma mark - Deprecated
+@protocol CoreStatusProtocol <NSObject>
+
+@property (nonatomic,assign) NetworkStatus currentStatus;
+
+@optional
+
+/** 网络状态变更 */
+-(void)coreNetworkChangeNoti:(NSNotification *)noti;
 
 @end
+
+
+@interface CoreStatus (CoreStatusDeprecated)
+
+/** 开始网络监听 */
++(void)beginNotiNetwork:(id<CoreStatusProtocol>)listener __deprecated_msg("Use `addNetworkStatusListener: withDidChangeBlock:`");
+/** 停止网络监听 */
++(void)endNotiNetwork:(id<CoreStatusProtocol>)listener __deprecated_msg("Use `remobeNetworkStatusListener:`");
+
+@end
+

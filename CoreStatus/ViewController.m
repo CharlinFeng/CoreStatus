@@ -11,14 +11,20 @@
 #import "CALayer+Transition.h"
 
 
-@interface ViewController ()<CoreStatusProtocol>
+@interface ViewController ()
 
 @property (weak, nonatomic) IBOutlet UILabel *showLabel;
 
 
 @end
 
+#define kListenerName   @"可以有很多歌Listener同时监听网络状态的"
+
 @implementation ViewController
+- (void)dealloc
+{
+    [CoreStatus remobeNetworkStatusListener:kListenerName];
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -27,28 +33,19 @@
     
     NSLog(@"%@",statusString);
     
-    [CoreStatus beginNotiNetwork:self];
-    
-}
-
-
-
-
--(void)coreNetworkChangeNoti:(NSNotification *)noti{
-    
-    NSString * statusString = [CoreStatus currentNetWorkStatusString];
-    
-    NSLog(@"%@\n\n\n\n=========================\n\n\n\n%@",noti,statusString);
-    
-    self.showLabel.text = statusString;
-    [self.showLabel.layer transitionWithAnimType:TransitionAnimTypeRamdom subType:TransitionSubtypesFromRamdom curve:TransitionCurveRamdom duration:.5f];
-    
+    /** Method deprecated [CoreStatus beginNotiNetwork:self]; */
+    self.showLabel.text = [CoreStatus currentNetWorkStatusString];
+    [CoreStatus addNetworkStatusListener:kListenerName withDidChangeBlock:^(NSString *statusName, CoreNetWorkStatus status) {
+        
+        NSLog(@"%@\n",statusName);
+        self.showLabel.text = statusName;
+        [self.showLabel.layer transitionWithAnimType:TransitionAnimTypeRamdom subType:TransitionSubtypesFromRamdom curve:TransitionCurveRamdom duration:.5f];
+    }];
 }
 
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
-    NSString * statusString = [CoreStatus currentNetWorkStatusString];
-    
-    NSLog(@"%@",statusString);
+    self.showLabel.text = [CoreStatus currentNetWorkStatusString];
+    NSLog(@"%@",[CoreStatus currentNetWorkStatusString]);
 }
 
 
