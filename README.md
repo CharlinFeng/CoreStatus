@@ -55,7 +55,7 @@
             /** 4G网络 */
             CoreNetWorkStatus4G,
             
-            //未知网络
+            /** 未知网络 */
             CoreNetWorkStatusUnkhow
         
         }CoreNetWorkStatus;
@@ -88,6 +88,10 @@
 
 <br/><br/>
 
+#### 结束语
+感谢1群朋友深夜测试！！！感谢！
+
+<br/><br/>
 #### 结束语
 其实有很多方法可以完成同样的事情，思路其实都是一样的。快加入组织回到组织的怀抱吧！
 <br/><br/>
