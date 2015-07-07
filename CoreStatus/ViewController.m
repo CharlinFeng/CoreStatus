@@ -23,9 +23,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    NSString * statusString = [CoreStatus currentNetWorkStatusString];
-    
-    NSLog(@"%@",statusString);
+    [self showText];
     
     [CoreStatus beginNotiNetwork:self];
     
@@ -40,10 +38,17 @@
     
     NSLog(@"%@\n\n\n\n=========================\n\n\n\n%@",noti,statusString);
     
+
+    [self showText];
+}
+
+-(void)showText{
+    NSString * statusString = [CoreStatus currentNetWorkStatusString];
     self.showLabel.text = statusString;
     [self.showLabel.layer transitionWithAnimType:TransitionAnimTypeRamdom subType:TransitionSubtypesFromRamdom curve:TransitionCurveRamdom duration:.5f];
-    
 }
+
+
 
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
     NSString * statusString = [CoreStatus currentNetWorkStatusString];
