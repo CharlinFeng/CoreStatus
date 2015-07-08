@@ -23,8 +23,8 @@
 @implementation ViewController
 - (void)dealloc
 {
-    [CoreStatus remobeNetworkStatusListener:kListenerName_1];
-    [CoreStatus remobeNetworkStatusListener:kListenerName_2];
+    [CoreStatus removeNetworkStatusListener:kListenerName_1];
+    [CoreStatus removeNetworkStatusListener:kListenerName_2];
 }
 
 - (void)viewDidLoad {
@@ -41,12 +41,13 @@
         NSLog(@"block 1 invoke");
     }];
     
+    __weak ViewController *ws = self;
     [CoreStatus addNetworkStatusListener:kListenerName_1 withDidChangeBlock:^(NSString *statusName, CoreNetWorkStatus status) {
         NSLog(@"block 2 invoke");
         
         NSLog(@"%@\n",statusName);
-        self.showLabel.text = statusName;
-        [self.showLabel.layer transitionWithAnimType:TransitionAnimTypeReveal subType:TransitionSubtypesFromTop curve:TransitionCurveEaseInEaseOut duration:.5f];
+        ws.showLabel.text = statusName;
+        [ws.showLabel.layer transitionWithAnimType:TransitionAnimTypeReveal subType:TransitionSubtypesFromTop curve:TransitionCurveEaseInEaseOut duration:.5f];
     }];
     
     [CoreStatus addNetworkStatusListener:kListenerName_2 withDidChangeBlock:^(NSString *statusName, CoreNetWorkStatus status) {

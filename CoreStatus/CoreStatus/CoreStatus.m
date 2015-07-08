@@ -81,7 +81,7 @@ static NSString *const CoreStatusChangedNoti = @"CoreStatusChangedNoti";
 }
 
 /** 移除网络监听 */
-+(void)remobeNetworkStatusListener:(NSString *)listenerName{
++(void)removeNetworkStatusListener:(NSString *)listenerName{
     CoreStatus *status = [CoreStatus sharedCoreStatus];
     [status.blockDict removeObjectForKey:listenerName];
 }

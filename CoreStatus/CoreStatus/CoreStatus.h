@@ -51,7 +51,7 @@ typedef void (^CSStatusDidChangedBlock) (NSString *statusName,CoreNetWorkStatus 
 /** 添加监听 */
 +(void)addNetworkStatusListener:(NSString *)listenerName withDidChangeBlock:(CSStatusDidChangedBlock)block;
 /** 移除监听 */
-+(void)remobeNetworkStatusListener:(NSString *)listenerName;
++(void)removeNetworkStatusListener:(NSString *)listenerName;
 
 
 /*
@@ -86,7 +86,7 @@ typedef void (^CSStatusDidChangedBlock) (NSString *statusName,CoreNetWorkStatus 
 /** 开始网络监听 */
 +(void)beginNotiNetwork:(id<CoreStatusProtocol>)listener __deprecated_msg("Use `addNetworkStatusListener: withDidChangeBlock:`");
 /** 停止网络监听 */
-+(void)endNotiNetwork:(id<CoreStatusProtocol>)listener __deprecated_msg("Use `remobeNetworkStatusListener:`");
++(void)endNotiNetwork:(id<CoreStatusProtocol>)listener __deprecated_msg("Use `removeNetworkStatusListener:`");
 
 @end
 
